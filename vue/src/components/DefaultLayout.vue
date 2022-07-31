@@ -99,18 +99,13 @@
                       focus:outline-none
                     "
                   >
-                    <MenuItem
-                      v-for="item in userNavigation"
-                      :key="item.name"
-                      v-slot="{ active }"
-                    >
+                    <MenuItem>
                       <a
-                        :href="item.href"
+                        @click="logout"
                         :class="[
-                          active ? 'bg-gray-100' : '',
-                          'block px-4 py-2 text-sm text-gray-700',
+                          'block px-4 py-2 text-sm text-gray-700 cursor-pointer',
                         ]"
-                        >{{ item.name }}</a
+                        >Sign out</a
                       >
                     </MenuItem>
                   </MenuItems>
@@ -151,7 +146,7 @@
             v-for="item in navigation"
             :key="item.name"
             as="a"
-            :to = "item.to"
+            :to="item.to"
             active-class="bg-gray-900 text-white"
             :class="[
               this.$route.name === item.to.name
@@ -198,9 +193,8 @@
           </div>
           <div class="mt-3 px-2 space-y-1">
             <DisclosureButton
-              v-for="item in userNavigation"
-              :key="item.name"
               as="a"
+              @click="logout"
               :href="item.href"
               class="
                 block
@@ -211,8 +205,9 @@
                 font-medium
                 text-gray-400
                 hover:text-white hover:bg-gray-700
+                cursor-pointer
               "
-              >{{ item.name }}</DisclosureButton
+              >Sign out</DisclosureButton
             >
           </div>
         </div>
@@ -236,14 +231,10 @@ import {
 import { BellIcon, MenuIcon, XIcon } from "@heroicons/vue/outline";
 import { useStore } from "vuex";
 import { computed } from "vue";
+import { useRouter } from "vue-router";
 const navigation = [
-  { name: "Dashboard", to:{name: "Dashboard"}},
-  { name: "Surveys", to:{name: "Surveys"}},
-];
-const userNavigation = [
-  { name: "Your Profile", href: "#" },
-  { name: "Settings", href: "#" },
-  { name: "Sign out", href: "#" },
+  { name: "Dashboard", to: { name: "Dashboard" } },
+  { name: "Surveys", to: { name: "Surveys" } },
 ];
 
 const store = useStore();
@@ -262,10 +253,18 @@ export default {
   },
   setup() {
     const store = useStore();
+    const router = useRouter();
+
+    function logout(){
+      store.commit('logout');
+      router.push({
+        name: 'Login'
+      })
+    }
     return {
       user: computed(() => store.state.user.data),
       navigation,
-      userNavigation,
+      logout
     };
   },
 };
